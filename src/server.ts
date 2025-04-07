@@ -14,6 +14,10 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+/*app.listen(8080, () => {
+  console.log('App listening on port http://localhost:8080!');
+});*/
+
 /**
  * Example Express Rest API endpoints can be defined here.
  * Uncomment and define endpoints as necessary.
