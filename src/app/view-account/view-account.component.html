@@ -1,0 +1,40 @@
+<h1>Account(s)</h1>
+<div style="background: #ECECEC; padding:30px;">
+  <div nz-row [nzGutter]="8">
+    <div nz-col [nzSpan]="8" *ngFor="let account of clientAccounts">
+      <nz-card nzTitle="Account - {{account.accountNumber}}" class="">
+        <p>Account type: {{ account.accountType }}</p>
+        <p>Balance: R{{ account.balance }}</p>
+        <button class="button-acc" nz-button nzType="primary" nzShape="circle" nz-dropdown [nzDropdownMenu]="menu" nzPlacement="bottomRight">
+          <nz-icon nzType="down" />
+          <nz-dropdown-menu #menu="nzDropdownMenu" id="myDropdown">
+            <ul nz-menu>
+              <li nz-menu-item>Transactions</li>
+              <li nz-menu-item>Withdraw</li>
+              <li nz-menu-item>Deposit</li>
+            </ul>
+          </nz-dropdown-menu>
+        </button>
+      </nz-card>
+      <nz-divider nzPlain></nz-divider>
+    </div>
+    <a class="icon-style" nz-tooltip nzTooltipTitle="Add account" (click)="showAddAccountModal()">
+      <nz-icon nzType="plus" nzTheme="outline"/>
+    </a>
+  </div>
+</div>
+
+<nz-modal [(nzVisible)]="isAddAccountVisible" nzTitle="Add Account" (nzOnCancel)="handleCancel()" nzOkText="Submit" (nzOnOk)="handleSubmit()">
+  <ng-container *nzModalContent>
+    <form [formGroup]="accountFormGroup">
+      <label>Account Type: </label>
+      <nz-select type="text"  class="form-control" formControlName="accountType"
+              [ngClass]="{'is-invalid': accountFormGroup.get('accountType')?.touched}">
+        <nz-option *ngFor="let accountType of accountTypes" nzValue="{{accountType}}" nzLabel="{{accountType}}"></nz-option>
+      </nz-select>
+      <div *ngIf="accountFormGroup.controls['accountType'].errors" class="invalid-feedback">
+        <div *ngIf="accountFormGroup.controls['accountType'].errors?.['required']">Account type is required!</div>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>
