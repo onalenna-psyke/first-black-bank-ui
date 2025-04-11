@@ -3,6 +3,7 @@ import {Account} from '../model/Account';
 import {catchError, Observable, of} from 'rxjs';
 import {ErrorModel} from '../model/ErrorModel';
 import {HttpClient} from '@angular/common/http';
+import {Transaction} from '../model/Transaction';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,18 @@ export class AccountService {
   }
 
   public getClientAccounts(account: Account): Observable<any>{
-    return  this.httpClient.post(this.baseUrl + '/get-client-account', account).pipe(
+    return  this.httpClient.post(this.baseUrl + '/get-client-accounts', account).pipe(
       catchError(err => this.handleError(err)));
+  }
+
+  public transaction(transaction: Transaction): Observable<any> {
+    return this.httpClient.post(this.baseUrl + '/transaction', transaction).pipe(
+      catchError(err => this.handleError(err)));
+  }
+
+  public getTransactions(transaction: Transaction): Observable<any> {
+    return this,this.httpClient.post(this.baseUrl + '/transaction/get-transactions', transaction).pipe(
+      catchError(err=>this.handleError(err)));
   }
 
   public handleError(err: any) : Observable<any> {
