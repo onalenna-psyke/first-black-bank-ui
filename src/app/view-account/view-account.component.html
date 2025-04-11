@@ -9,9 +9,8 @@
           <nz-icon nzType="down" />
           <nz-dropdown-menu #menu="nzDropdownMenu" id="myDropdown">
             <ul nz-menu>
-              <li nz-menu-item>Transactions</li>
-              <li nz-menu-item>Withdraw</li>
-              <li nz-menu-item>Deposit</li>
+              <a nz-menu-item (click)="getTransactions(account.accountNumber)">Transactions</a>
+              <a nz-menu-item (click)="showTransactionModal(account.accountNumber)">Transact</a>
             </ul>
           </nz-dropdown-menu>
         </button>
@@ -24,7 +23,7 @@
   </div>
 </div>
 
-<nz-modal [(nzVisible)]="isAddAccountVisible" nzTitle="Add Account" (nzOnCancel)="handleCancel()" nzOkText="Submit" (nzOnOk)="handleSubmit()">
+<nz-modal [(nzVisible)]="isAddAccountVisible" nzTitle="Add Account" (nzOnCancel)="handleCancel()" nzOkText="Submit" (nzOnOk)="handleAddAccountSubmit()">
   <ng-container *nzModalContent>
     <form [formGroup]="accountFormGroup">
       <label>Account Type: </label>
@@ -34,6 +33,43 @@
       </nz-select>
       <div *ngIf="accountFormGroup.controls['accountType'].errors" class="invalid-feedback">
         <div *ngIf="accountFormGroup.controls['accountType'].errors?.['required']">Account type is required!</div>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isTransactionVisible" nzTitle="Transaction" (nzOnCancel)="handleCancel()" nzOkText="Transact" (nzOnOk)="handleTransactionSubmit()">
+  <ng-container *nzModalContent>
+    <form [formGroup]="transactionFormGroup">
+      <label>Transaction Type:</label>
+      <nz-select type="text"  class="form-control" formControlName="transactionType"
+                 [ngClass]="{'is-invalid': transactionFormGroup.get('transactionType')?.touched}">
+        <nz-option *ngFor="let transactionType of transactionTypes" nzValue="{{transactionType}}" nzLabel="{{transactionType}}"></nz-option>
+      </nz-select>
+      <div *ngIf="transactionFormGroup.controls['transactionType'].errors" class="invalid-feedback">
+        <div *ngIf="transactionFormGroup.controls['transactionType'].errors?.['required']">Transaction type is required!</div>
+      </div>
+
+      <div *ngIf="this.transactionFormGroup.get('transactionType')?.value == 'TRANSFER'">
+        <label>Recipient Account Number:</label>
+        <nz-select type="text"  class="form-control" formControlName="recipientAccountNumber"
+                   [ngClass]="{'is-invalid': transactionFormGroup.get('recipientAccountNumber')?.touched}">
+          <div *ngFor="let acc of this.clientAccounts">
+            <nz-option *ngIf="acc.accountNumber !== this.account.accountNumber"  nzValue="{{acc.accountNumber}}" nzLabel="{{acc.accountNumber}}"></nz-option>
+          </div>
+        </nz-select>
+        <div *ngIf="transactionFormGroup.controls['recipientAccountNumber'].errors" class="invalid-feedback">
+          <div *ngIf="transactionFormGroup.controls['recipientAccountNumber'].errors?.['required']">Recipient account number is required!</div>
+        </div>
+      </div>
+
+      <label>Amount:</label>
+      <nz-input-group nzPrefix="R">
+        <input nz-input nzSize="small" type="number" class="form-control" formControlName="amount"
+               [ngClass]="{'is-invalid': transactionFormGroup.get('amount')?.touched}">
+      </nz-input-group>
+      <div *ngIf="transactionFormGroup.controls['amount'].errors" class="invalid-feedback">
+        <div *ngIf="transactionFormGroup.controls['amount'].errors?.['required']">Amount is required!</div>
       </div>
     </form>
   </ng-container>
