@@ -1,27 +1,61 @@
-<h1>Account(s)</h1>
-<div style="background: #ECECEC; padding:30px;">
-  <div nz-row [nzGutter]="8">
-    <div nz-col [nzSpan]="8" *ngFor="let account of clientAccounts">
-      <nz-card nzTitle="Account - {{account.accountNumber}}" class="">
-        <p>Account type: {{ account.accountType }}</p>
-        <p>Balance: R{{ account.balance }}</p>
-        <button class="button-acc" nz-button nzType="primary" nzShape="circle" nz-dropdown [nzDropdownMenu]="menu" nzPlacement="bottomRight">
-          <nz-icon nzType="down" />
-          <nz-dropdown-menu #menu="nzDropdownMenu" id="myDropdown">
-            <ul nz-menu>
-              <a nz-menu-item (click)="getTransactions(account.accountNumber)">Transactions</a>
-              <a nz-menu-item (click)="showTransactionModal(account.accountNumber)">Transact</a>
-            </ul>
-          </nz-dropdown-menu>
-        </button>
-      </nz-card>
-      <nz-divider nzPlain></nz-divider>
+<div *ngIf="!isViewTransaction">
+  <h1>Accounts</h1>
+  <div class="div-style">
+    <div nz-row [nzGutter]="8">
+      <div nz-col [nzSpan]="8" *ngFor="let account of clientAccounts">
+        <nz-card nzTitle="Account - {{account.accountNumber}}" class="">
+          <p>Account type: {{ account.accountType }}</p>
+          <p>Balance: R{{ account.balance }}</p>
+          <button class="button-acc" nz-button nzType="primary" nzShape="circle" nz-dropdown [nzDropdownMenu]="menu" nzPlacement="bottomRight">
+            <nz-icon nzType="down" />
+            <nz-dropdown-menu #menu="nzDropdownMenu" id="myDropdown">
+              <ul nz-menu>
+                <a nz-menu-item (click)="getTransactions(account.accountNumber)">Transactions</a>
+                <a nz-menu-item (click)="showTransactionModal(account.accountNumber)">Transact</a>
+              </ul>
+            </nz-dropdown-menu>
+          </button>
+        </nz-card>
+        <nz-divider nzPlain></nz-divider>
+      </div>
+      <a class="icon-style" nz-tooltip nzTooltipTitle="Add account" (click)="showAddAccountModal()">
+        <nz-icon nzType="plus" nzTheme="outline"/>
+      </a>
     </div>
-    <a class="icon-style" nz-tooltip nzTooltipTitle="Add account" (click)="showAddAccountModal()">
-      <nz-icon nzType="plus" nzTheme="outline"/>
-    </a>
   </div>
 </div>
+
+<div *ngIf="isViewTransaction">
+  <nz-page-header (nzBack)="onBack()" nzBackIcon nzTitle="Accounts" nzSubtitle="Transactions"></nz-page-header>
+  <h2>#{{this.transaction.accountNumber}}</h2>
+  <div class="div-style">
+    <nz-table nzBordered #transactionTable [nzData]="transactions" nzSize="small">
+      <thead>
+      <tr>
+        <th>TRANSACTION NO.</th>
+        <th>RECIPIENT ACCOUNT NO.</th>
+        <th>TRANSACTION TYPE</th>
+        <th>AMOUNT</th>
+        <th>TRANSACTION STATUS</th>
+        <th>DATE & TIME</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (transaction of transactionTable.data; track transaction) {
+          <tr>
+            <td>{{ transaction.transactionNumber }}</td>
+            <td>{{ transaction.recipientAccountNumber }}</td>
+            <td>{{ transaction.transactionType }}</td>
+            <td>R{{ transaction.amount }}</td>
+            <td>{{ transaction.transactionStatus }}</td>
+            <td>{{ transaction.dateTime }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</div>
+
 
 <nz-modal [(nzVisible)]="isAddAccountVisible" nzTitle="Add Account" (nzOnCancel)="handleCancel()" nzOkText="Submit" (nzOnOk)="handleAddAccountSubmit()">
   <ng-container *nzModalContent>

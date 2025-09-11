@@ -29,7 +29,7 @@ export class AccountService {
   }
 
   public getTransactions(transaction: Transaction): Observable<any> {
-    return this,this.httpClient.post(this.baseUrl + '/transaction/get-transactions', transaction).pipe(
+    return this.httpClient.post(this.baseUrl + '/transaction/get-transactions', transaction).pipe(
       catchError(err=>this.handleError(err)));
   }
 

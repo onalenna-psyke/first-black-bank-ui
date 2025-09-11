@@ -19,6 +19,10 @@ import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {NzInputDirective, NzInputGroupComponent} from 'ng-zorro-antd/input';
 import {TransactionType} from '../model/enums/TransactionType';
 import {Transaction} from '../model/Transaction';
+import {TransactionStatus} from '../model/enums/TransactionStatus';
+import {NzTableModule} from 'ng-zorro-antd/table';
+import {NzPageHeaderModule} from 'ng-zorro-antd/page-header';
+
 
 @Component({
   selector: 'app-view-account',
@@ -46,7 +50,9 @@ import {Transaction} from '../model/Transaction';
     NzSelectComponent,
     NzOptionComponent,
     NzInputDirective,
-    NzInputGroupComponent
+    NzInputGroupComponent,
+    NzTableModule,
+    NzPageHeaderModule
   ],
   templateUrl: './view-account.component.html',
   styleUrl: './view-account.component.scss'
@@ -56,26 +62,30 @@ export class ViewAccountComponent {
   accountFormGroup: FormGroup;
   transactionFormGroup: FormGroup;
   accountTypes = [AccountType.SAVINGS,AccountType.CHEQUE];
-  account: Account;
   transactionTypes = [TransactionType.WITHDRAWAL, TransactionType.DEPOSIT, TransactionType.TRANSFER];
+  account: Account;
   transaction: Transaction;
   transactions: Transaction[];
-  idNumber = '9702120589089';
   clientAccounts: Account[];
+  idNumber = '9710263367088';
   isAddAccountVisible = false;
   isTransactionVisible = false;
+  isViewTransaction = false;
 
   constructor(private accountService: AccountService, private modal: NzModalService) {
     this.account = new Account('', AccountType.CHEQUE, 0, this.idNumber);
-    this.transaction = new Transaction('','','', TransactionType.WITHDRAWAL, 0,'');
+    this.transaction = new Transaction('','','', TransactionType.WITHDRAWAL, 0, '2015-12-10 13:00:00',TransactionStatus.RECEIVED);
     this.clientAccounts = [
-       new Account('ACC1', AccountType.CHEQUE, 0, this.idNumber),
-       new Account('ACC2', AccountType.SAVINGS, 0, this.idNumber),
-       new Account('ACC3', AccountType.SAVINGS, 0, this.idNumber),
-       new Account('ACC4', AccountType.SAVINGS, 0, this.idNumber),
-       new Account('ACC5', AccountType.SAVINGS, 0, this.idNumber)];
+       new Account('1234567', AccountType.CHEQUE, 0, this.idNumber),
+       new Account('2345678', AccountType.SAVINGS, 0, this.idNumber),
+       new Account('3456789', AccountType.SAVINGS, 0, this.idNumber),
+       new Account('4567890', AccountType.SAVINGS, 0, this.idNumber),
+       new Account('5678901', AccountType.SAVINGS, 0, this.idNumber)];
     this.transactions = [
-      new Transaction('','','', TransactionType.DEPOSIT, 0,'')
+      new Transaction('T123','1234567','3456789', TransactionType.DEPOSIT, 100.90,'2015-12-10 13:00:00',TransactionStatus.RECEIVED),
+      new Transaction('T123','1234567','3456789', TransactionType.WITHDRAWAL, 500.84,'2015-12-10 15:00:00',TransactionStatus.SENT),
+      new Transaction('T123','1234567','3456789', TransactionType.TRANSFER, 0,'2015-12-10 14:00:00',TransactionStatus.RECEIVED),
+      new Transaction('T123','1234567','3456789', TransactionType.DEPOSIT, 0,'2015-12-10 17:00:00',TransactionStatus.SENT)
     ];
     this.accountFormGroup = new FormBuilder().group({
       accountType: ['', [Validators.required]]});
@@ -128,6 +138,9 @@ export class ViewAccountComponent {
     this.accountFormGroup.reset();
     this.transactionFormGroup.reset();
   }
+  onBack() {
+    this.isViewTransaction = false;
+  }
 
   addAccount(){
     this.account.accountType = this.accountFormGroup.get('accountType')?.value;
@@ -172,15 +185,16 @@ export class ViewAccountComponent {
 
   getTransactions(accountNumber: string) {
     this.transaction.accountNumber = accountNumber;
-
-    this.accountService.getTransactions(this.transaction).subscribe(transactions => {
+    this.isViewTransaction = true;
+    /*this.accountService.getTransactions(this.transaction).subscribe(transactions => {
       if(transactions instanceof ErrorModel){
         this.err(transactions.message);
       } else {
         this.transactions = transactions;
         console.log(this.transactions);
         this.success('Successfully retrieved transactions!');
+        this.isViewTransaction = true;
       }
-    })
+    })*/
   }
 }
